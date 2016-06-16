@@ -75,20 +75,15 @@ describe("Cucumber.Listener.PrettyFormatter", function () {
         getTags: []
       });
       event = createSpyWithStubs("event", { getPayloadItem: feature });
-      callback = createSpy("callback");
     });
 
     describe('no tags or description', function () {
       beforeEach(function (){
-        prettyFormatter.handleBeforeFeatureEvent(event, callback);
+        prettyFormatter.handleBeforeFeatureEvent(event);
       });
 
       it('logs the keyword and name', function () {
         expect(logged).toEqual('feature-keyword: feature-name\n\n');
-      });
-
-      it("calls back", function () {
-        expect(callback).toHaveBeenCalled();
       });
     });
 
@@ -127,7 +122,7 @@ describe("Cucumber.Listener.PrettyFormatter", function () {
   });
 
   describe("handleBeforeScenarioEvent()", function () {
-    var event, scenario, callback;
+    var event, scenario;
 
     beforeEach(function () {
       scenario = createSpyWithStubs("scenario", {
@@ -140,20 +135,15 @@ describe("Cucumber.Listener.PrettyFormatter", function () {
         getSteps: []
       });
       event = createSpyWithStubs("event", { getPayloadItem: scenario });
-      callback = createSpy("callback");
     });
 
     describe('no tags', function () {
       beforeEach(function (){
-        prettyFormatter.handleBeforeScenarioEvent(event, callback);
+        prettyFormatter.handleBeforeScenarioEvent(event);
       });
 
       it('logs the keyword and name', function () {
         expect(logged).toEqual('  scenario-keyword: scenario-name\n');
-      });
-
-      it("calls back", function () {
-        expect(callback).toHaveBeenCalled();
       });
     });
 
@@ -163,7 +153,7 @@ describe("Cucumber.Listener.PrettyFormatter", function () {
           createSpyWithStubs("tag1", {getName: '@tag1'}),
           createSpyWithStubs("tag2", {getName: '@tag2'})
         ]);
-        prettyFormatter.handleBeforeScenarioEvent(event, callback);
+        prettyFormatter.handleBeforeScenarioEvent(event);
       });
 
       it('logs the keyword and name', function () {
@@ -176,44 +166,37 @@ describe("Cucumber.Listener.PrettyFormatter", function () {
   });
 
   describe("handleAfterScenarioEvent()", function () {
-    var event, callback;
+    var event;
 
     beforeEach(function () {
-      event    = createSpy("event");
-      callback = createSpy("callback");
+      event = createSpy("event");
     });
 
     it("logs a new line", function () {
-      prettyFormatter.handleAfterScenarioEvent(event, callback);
+      prettyFormatter.handleAfterScenarioEvent(event);
       expect(prettyFormatter.log).toHaveBeenCalledWith("\n");
-    });
-
-    it("calls back", function () {
-      prettyFormatter.handleAfterScenarioEvent(event, callback);
-      expect(callback).toHaveBeenCalled();
     });
   });
 
   describe("handleStepResultEvent()", function () {
-    var step, stepResult, event, callback;
+    var step, stepResult, event;
 
     beforeEach(function () {
       step       = createSpyWithStubs("step", { isHidden: null });
       stepResult = createSpyWithStubs("step result", { getStep: step, getStatus: undefined });
       event      = createSpyWithStubs("event", { getPayloadItem: stepResult });
-      callback   = createSpy("callback");
       spyOnStub(prettyFormatter, 'logStepResult');
     });
 
     it("gets the step result from the event payload", function () {
-      prettyFormatter.handleStepResultEvent(event, callback);
+      prettyFormatter.handleStepResultEvent(event);
       expect(event.getPayloadItem).toHaveBeenCalledWith('stepResult');
     });
 
     describe("when step result is not hidden", function () {
       it("calls logStepResult() as the step is not hidden", function () {
         step.isHidden.and.returnValue(false);
-        prettyFormatter.handleStepResultEvent(event, callback);
+        prettyFormatter.handleStepResultEvent(event);
         expect(prettyFormatter.logStepResult).toHaveBeenCalledWith(step, stepResult);
       });
     });
@@ -222,14 +205,9 @@ describe("Cucumber.Listener.PrettyFormatter", function () {
       it("does not call logStepResult() to keep the step hidden", function () {
         step.isHidden.and.returnValue(true);
         stepResult.getStatus.and.returnValue(Cucumber.Status.PASSED);
-        prettyFormatter.handleStepResultEvent(event, callback);
+        prettyFormatter.handleStepResultEvent(event);
         expect(prettyFormatter.logStepResult).not.toHaveBeenCalled();
       });
-    });
-
-    it("calls back", function () {
-      prettyFormatter.handleStepResultEvent(event, callback);
-      expect(callback).toHaveBeenCalled();
     });
   });
 

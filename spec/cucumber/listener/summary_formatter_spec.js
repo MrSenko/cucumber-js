@@ -25,16 +25,15 @@ describe("Cucumber.Listener.SummaryFormatter", function () {
   });
 
   describe("handleStepResultEvent()", function () {
-    var event, callback, stepResult;
+    var event, stepResult;
 
     beforeEach(function () {
       stepResult = createSpyWithStubs("step result", {getStatus: undefined});
       event      = createSpyWithStubs("event", {getPayloadItem: stepResult});
-      callback   = createSpy("Callback");
     });
 
     it("gets the step result from the event payload", function () {
-      summaryFormatter.handleStepResultEvent(event, callback);
+      summaryFormatter.handleStepResultEvent(event);
       expect(event.getPayloadItem).toHaveBeenCalledWith('stepResult');
     });
 
@@ -45,7 +44,7 @@ describe("Cucumber.Listener.SummaryFormatter", function () {
       });
 
       it("handles the undefined step result", function () {
-        summaryFormatter.handleStepResultEvent(event, callback);
+        summaryFormatter.handleStepResultEvent(event);
         expect(summaryFormatter.storeAmbiguousStepResult).toHaveBeenCalledWith(stepResult);
       });
     });
@@ -57,7 +56,7 @@ describe("Cucumber.Listener.SummaryFormatter", function () {
       });
 
       it("handles the undefined step result", function () {
-        summaryFormatter.handleStepResultEvent(event, callback);
+        summaryFormatter.handleStepResultEvent(event);
         expect(summaryFormatter.storeUndefinedStepResult).toHaveBeenCalledWith(stepResult);
       });
     });
@@ -69,14 +68,9 @@ describe("Cucumber.Listener.SummaryFormatter", function () {
       });
 
       it("handles the failed step result", function () {
-        summaryFormatter.handleStepResultEvent(event, callback);
+        summaryFormatter.handleStepResultEvent(event);
         expect(summaryFormatter.storeFailedStepResult).toHaveBeenCalledWith(stepResult);
       });
-    });
-
-    it("calls back", function () {
-      summaryFormatter.handleStepResultEvent(event, callback);
-      expect(callback).toHaveBeenCalled();
     });
   });
 
